@@ -2,12 +2,12 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class TextDrawerPivotTest : MonoBehaviour {
+public class TextDrawerPivotTest : MonoBehaviour
+{
+    public TextDrawer.TextPivot Pivot;
 
-	public TextDrawer.TextPivot Pivot;
-	
-	private void LateUpdate()
-	{
-		TextDrawer.DrawText("Pivot",12f,Color.white, transform.localToWorldMatrix,Pivot);
-	}
+    private void LateUpdate()
+    {
+        TextDrawer.DrawText("Pivot", 12f, Color.white, transform.localToWorldMatrix, Pivot);
+    }
 }
