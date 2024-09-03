@@ -1,13 +1,14 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
-public class TextDrawerPivotTest : MonoBehaviour
+namespace SimpleText.Samples
 {
-    public TextDrawer.TextPivot Pivot;
-
-    private void LateUpdate()
+    public class TextDrawerPivotTest : MonoBehaviour
     {
-        TextDrawer.DrawText("Pivot", 12f, Color.white, transform.localToWorldMatrix, Pivot);
+        public TextDrawer.TextPivot Pivot;
+
+        private void LateUpdate()
+        {
+            TextDrawer.DrawText("Pivot", 12f, Color.white, transform.localToWorldMatrix, Pivot);
+        }
     }
 }

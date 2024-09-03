@@ -2,24 +2,26 @@
 using TMPro;
 using UnityEngine;
 
-public class TextDrawerTest : MonoBehaviour
+namespace SimpleText.Samples
 {
-    public TMP_FontAsset[] Fonts;
-    public int Amount = 5;
-    public float SphereRadius = 2f;
-    public float TextSize = 10f;
-    public Vector3 MinimumPosition = new Vector3(-5f, 0.5f, -5f);
-    public Vector3 MaximumPosition = new Vector3(5f, 0.5f, -5f);
-    public Vector3 PositionIncrement = new Vector3(0.3f, 0f, 0.3f);
-    public float VerticalPosDisplacementFactor = 0.08f;
-    public float VetticalPosDIsplacementSpeedFactor = 2f;
-
-    public void SetAmount(float amount)
+    public class TextDrawerTest : MonoBehaviour
     {
-        Amount = (int)amount;
-    }
+        public TMP_FontAsset[] Fonts;
+        public int Amount = 5;
+        public float SphereRadius = 2f;
+        public float TextSize = 10f;
+        public Vector3 MinimumPosition = new Vector3(-5f, 0.5f, -5f);
+        public Vector3 MaximumPosition = new Vector3(5f, 0.5f, -5f);
+        public Vector3 PositionIncrement = new Vector3(0.3f, 0f, 0.3f);
+        public float VerticalPosDisplacementFactor = 0.08f;
+        public float VetticalPosDIsplacementSpeedFactor = 2f;
 
-    private readonly List<string> _letters = new List<string>()
+        public void SetAmount(float amount)
+        {
+            Amount = (int)amount;
+        }
+
+        private readonly List<string> _letters = new List<string>()
     {
         "1",
         "2",
@@ -40,35 +42,36 @@ public class TextDrawerTest : MonoBehaviour
         "H",
     };
 
-    private static readonly Color RedColor = Color.red;
-    private static readonly Color GreenColor = Color.green;
-    private static readonly Color BlueColor = Color.blue;
+        private static readonly Color RedColor = Color.red;
+        private static readonly Color GreenColor = Color.green;
+        private static readonly Color BlueColor = Color.blue;
 
-    private void Update()
-    {
-        var currentPos = MinimumPosition;
-        for (var i = 0; i < Amount; i++)
+        private void Update()
         {
-            var pos = currentPos;
-
-            pos.y += (Mathf.Sin((Time.time + i) * VetticalPosDIsplacementSpeedFactor) * VerticalPosDisplacementFactor);
-
-            var lerpFactor = Mathf.Sin(Time.time + i);
-
-            var color = Color.Lerp(GreenColor, BlueColor, lerpFactor);
-
-            if (lerpFactor < 0.0f)
+            var currentPos = MinimumPosition;
+            for (var i = 0; i < Amount; i++)
             {
-                color = Color.Lerp(GreenColor, RedColor, -lerpFactor);
-            }
-            TextDrawer.DrawText(_letters[i % _letters.Count], TextSize, color, Matrix4x4.TRS(pos, Quaternion.LookRotation(Vector3.up, Vector3.forward), Vector3.one), Fonts[i % Fonts.Length]);
+                var pos = currentPos;
 
-            currentPos.x += PositionIncrement.x;
+                pos.y += (Mathf.Sin((Time.time + i) * VetticalPosDIsplacementSpeedFactor) * VerticalPosDisplacementFactor);
 
-            if (currentPos.x > MaximumPosition.x)
-            {
-                currentPos.x = MinimumPosition.x;
-                currentPos.z += PositionIncrement.z;
+                var lerpFactor = Mathf.Sin(Time.time + i);
+
+                var color = Color.Lerp(GreenColor, BlueColor, lerpFactor);
+
+                if (lerpFactor < 0.0f)
+                {
+                    color = Color.Lerp(GreenColor, RedColor, -lerpFactor);
+                }
+                TextDrawer.DrawText(_letters[i % _letters.Count], TextSize, color, Matrix4x4.TRS(pos, Quaternion.LookRotation(Vector3.up, Vector3.forward), Vector3.one), Fonts[i % Fonts.Length]);
+
+                currentPos.x += PositionIncrement.x;
+
+                if (currentPos.x > MaximumPosition.x)
+                {
+                    currentPos.x = MinimumPosition.x;
+                    currentPos.z += PositionIncrement.z;
+                }
             }
         }
     }

@@ -1,29 +1,30 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
-public class TextDrawerBillboardTest : MonoBehaviour
+namespace SimpleText.Samples
 {
-    public TextDrawer.TextPivot Pivot;
-
-    Vector3[] positions = new Vector3[100];
-    Color[] colors = new Color[100];
-
-    private void Start()
+    public class TextDrawerBillboardTest : MonoBehaviour
     {
-        for (int i = 0; i < 100; i++)
+        public TextDrawer.TextPivot Pivot;
+
+        Vector3[] positions = new Vector3[100];
+        Color[] colors = new Color[100];
+
+        private void Start()
         {
-            positions[i] = transform.position + Random.insideUnitSphere * 25f;
-            colors[i] = Random.ColorHSV();
+            for (int i = 0; i < 100; i++)
+            {
+                positions[i] = transform.position + Random.insideUnitSphere * 25f;
+                colors[i] = Random.ColorHSV();
+            }
+
         }
 
-    }
-
-    private void LateUpdate()
-    {
-        for (int i = 0; i < 100; i++)
+        private void LateUpdate()
         {
-            TextDrawer.DrawTextFacingCamera("Billboard" + i, 12f, colors[i], positions[i]);
+            for (int i = 0; i < 100; i++)
+            {
+                TextDrawer.DrawTextFacingCamera("Billboard" + i, 12f, colors[i], positions[i]);
+            }
         }
     }
 }
