@@ -77,6 +77,8 @@ public class TextDrawer : MonoBehaviour
     private Color _materialPropertyBlockLastColorSet = Color.white;
     private TMP_FontAsset _defaultFontAsset;
 
+    Camera mainCamera;
+
     /// <summary>
     ///  Draws a 3D text mesh. This works in immediate mode, so you need to call this every frame you want to draw it.
     /// </summary>
@@ -128,6 +130,12 @@ public class TextDrawer : MonoBehaviour
         _materialPropertyBlock = new MaterialPropertyBlock();
         _materialTextColorPropertyId = Shader.PropertyToID("_FaceColor");
         _defaultFontAsset = _textMeshPro.font;
+        mainCamera = Camera.main;
+    }
+
+    public void AssignMainCamera(Camera camera)
+    {
+        mainCamera = camera;
     }
 
     Mesh GenerateMeshForText(string text, float fontSize, TMP_FontAsset font)
@@ -210,16 +218,12 @@ public class TextDrawer : MonoBehaviour
     // New method to align matrix to face the main camera
     private void AlignMatrixToCamera(ref Matrix4x4 matrix)
     {
-        Camera mainCamera = Camera.main;
-        if (mainCamera != null)
-        {
-            // Calculate rotation to align with the camera
-            Vector3 cameraForward = -mainCamera.transform.forward;
-            Quaternion lookRotation = Quaternion.LookRotation(-cameraForward, Vector3.up);
+        // Calculate rotation to align with the camera
+        Vector3 cameraForward = -mainCamera.transform.forward;
+        Quaternion lookRotation = Quaternion.LookRotation(-cameraForward, Vector3.up);
 
-            // Apply the rotation to the existing matrix
-            matrix *= Matrix4x4.Rotate(lookRotation);
-        }
+        // Apply the rotation to the existing matrix
+        matrix *= Matrix4x4.Rotate(lookRotation);
     }
 
     // Helper methods for text positioning and alignment
