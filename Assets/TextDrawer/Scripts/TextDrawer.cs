@@ -95,6 +95,14 @@ public class TextDrawer : MonoBehaviour
         Instance.DrawTextInternal(text, fontSize, color, mat, font, pivot);
     }
 
+    // New method to draw text facing the main camera
+    public static void DrawTextFacingCamera(string text, float fontSize, Color color, Vector3 position, TMP_FontAsset font = null, TextPivot pivot = TextPivot.Center)
+    {
+        Matrix4x4 mat = Matrix4x4.TRS(position, Quaternion.identity, Vector3.one);
+        Instance.DrawTextInternal(text, fontSize, color, mat, font, pivot, true);
+    }
+
+
     private static TextDrawer Instance
     {
         get
@@ -170,7 +178,8 @@ public class TextDrawer : MonoBehaviour
         get { return _textMeshCache.Capacity; }
     }
 
-    private void DrawTextInternal(string text, float fontSize, Color color, Matrix4x4 mat, TMP_FontAsset font = null, TextPivot pivot = TextPivot.Center)
+    // Existing DrawTextInternal method modified to include faceCamera parameter
+    private void DrawTextInternal(string text, float fontSize, Color color, Matrix4x4 mat, TMP_FontAsset font = null, TextPivot pivot = TextPivot.Center, bool faceCamera = false)
     {
         if (_materialPropertyBlockLastColorSet != color)
         {
@@ -179,9 +188,17 @@ public class TextDrawer : MonoBehaviour
         }
         if (font == null) font = _defaultFontAsset;
 
-
-        //Since TMP generates meshes that, by default, face the -z direction, we need to rotate it by 180 degrees in the y axis
-        RotateMatrix180DegreesInYAxis(ref mat);
+        // Rotate the matrix to face the -z direction if faceCamera is false
+        if (faceCamera)
+        {
+            //RotateMatrix180DegreesInYAxis(ref mat);
+            AlignMatrixToCamera(ref mat);
+        }
+        else
+        {
+            // Rotate the matrix to face the -z direction (default)
+            RotateMatrix180DegreesInYAxis(ref mat);
+        }
 
         var textMesh = GenerateMeshForText(text, fontSize, font);
 
@@ -189,6 +206,23 @@ public class TextDrawer : MonoBehaviour
 
         Graphics.DrawMesh(textMesh, mat, font.material, 0, null, 0, _materialPropertyBlock);
     }
+
+    // New method to align matrix to face the main camera
+    private void AlignMatrixToCamera(ref Matrix4x4 matrix)
+    {
+        Camera mainCamera = Camera.main;
+        if (mainCamera != null)
+        {
+            // Calculate rotation to align with the camera
+            Vector3 cameraForward = -mainCamera.transform.forward;
+            Quaternion lookRotation = Quaternion.LookRotation(-cameraForward, Vector3.up);
+
+            // Apply the rotation to the existing matrix
+            matrix *= Matrix4x4.Rotate(lookRotation);
+        }
+    }
+
+    // Helper methods for text positioning and alignment
 
     private void ApplyTextAlignmentToTRSMatrix(ref Matrix4x4 matrix, TextPivot pivot, Bounds textBounds)
     {
@@ -231,7 +265,7 @@ public class TextDrawer : MonoBehaviour
 
     private void RotateMatrix180DegreesInYAxis(ref Matrix4x4 matrix)
     {
-        //Same as doing -> matrix *= Matrix4x4.Rotate(Quaternion.AngleAxis(180f, Vector3.up));
+        // Same as doing -> matrix *= Matrix4x4.Rotate(Quaternion.AngleAxis(180f, Vector3.up));
         matrix.m00 = -matrix.m00;
         matrix.m10 = -matrix.m10;
         matrix.m20 = -matrix.m20;
@@ -243,7 +277,7 @@ public class TextDrawer : MonoBehaviour
 
     private void TranslateMatrixInYAxis(ref Matrix4x4 matrix, float translation)
     {
-        //Same as doing -> matrix = matrix * Matrix4x4.Translate(new Vector3(0f,translation,0f))
+        // Same as doing -> matrix = matrix * Matrix4x4.Translate(new Vector3(0f,translation,0f))
         matrix.m03 = matrix.m03 + matrix.m01 * translation;
         matrix.m13 = matrix.m13 + matrix.m11 * translation;
         matrix.m23 = matrix.m23 + matrix.m21 * translation;
@@ -251,7 +285,7 @@ public class TextDrawer : MonoBehaviour
 
     private void TranslateMatrixInXAxis(ref Matrix4x4 matrix, float translation)
     {
-        //Same as doing -> matrix = matrix * Matrix4x4.Translate(new Vector3(translation,0f,0f))
+        // Same as doing -> matrix = matrix * Matrix4x4.Translate(new Vector3(translation,0f,0f))
         matrix.m03 = matrix.m03 + matrix.m00 * translation;
         matrix.m13 = matrix.m13 + matrix.m10 * translation;
         matrix.m23 = matrix.m23 + matrix.m20 * translation;
@@ -259,9 +293,10 @@ public class TextDrawer : MonoBehaviour
 
     private void TranslateMatrixInXY(ref Matrix4x4 matrix, float xTranslation, float yTranslation)
     {
-        //Same as doing -> matrix = matrix * Matrix4x4.Translate(new Vector3(xTranslation,yTranslation,0f))
+        // Same as doing -> matrix = matrix * Matrix4x4.Translate(new Vector3(xTranslation,yTranslation,0f))
         matrix.m03 = matrix.m03 + matrix.m01 * yTranslation + matrix.m00 * xTranslation;
         matrix.m13 = matrix.m13 + matrix.m11 * yTranslation + matrix.m10 * xTranslation;
         matrix.m23 = matrix.m23 + matrix.m21 * yTranslation + matrix.m20 * xTranslation;
     }
+
 }
